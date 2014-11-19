@@ -86,6 +86,7 @@ public class Main extends Activity implements SensorEventListener {
     protected void onPause() {
         super.onPause();
         this.mAccelManager.unregisterListener(this);
+        this.mGyroManager.unregisterListener(this);
     }
 
     /**
@@ -94,6 +95,8 @@ public class Main extends Activity implements SensorEventListener {
     protected void onResume() {
         super.onResume();
         this.mAccelManager.registerListener(this, this.accel, 
+                SensorManager.SENSOR_DELAY_NORMAL);
+        this.mGyroManager.registerListener(this, this.gyro, 
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
