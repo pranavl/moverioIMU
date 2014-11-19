@@ -20,17 +20,22 @@ public class Main extends Activity implements SensorEventListener {
     /**
      * Flag for initialization.
      */
-    private boolean mInitialized;
+    private boolean initialized;
     
     /**
      * Previous values for accelerometer.
      */
-    private float mLastX, mLastY, mLastZ;    
+    private float aLastX, aLastY, aLastZ;    
     
     /**
-     * Sensor manager.
+     * Sensor manager for accelerometer.
      */
-    private SensorManager mSensorManager;
+    private SensorManager mAccelManager;
+
+    /**
+     * Sensor manager for gyroscope.
+     */
+    private SensorManager mGyroManager;
 
     /**
      * Accelerometer.
@@ -45,7 +50,7 @@ public class Main extends Activity implements SensorEventListener {
     /**
      * Filtering value for noise.
      */
-    private final float NOISE = (float) 0.0;
+    private final float accNOISE = (float) 0.0;
     
     /**
      * Called when created.
@@ -53,15 +58,25 @@ public class Main extends Activity implements SensorEventListener {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        //Initialize activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        this.mInitialized = false;
-        this.mSensorManager = (SensorManager) getSystemService(
-                Context.SENSOR_SERVICE);
-        this.accel = this.mSensorManager.getDefaultSensor(
-                Sensor.TYPE_ACCELEROMETER);
+        this.initialized = false;
         
-        this.mSensorManager.registerListener(this, this.accel, 
+        //Set up accelerometer and listener
+        this.mAccelManager = (SensorManager) getSystemService(
+                Context.SENSOR_SERVICE);
+        this.accel = this.mAccelManager.getDefaultSensor(
+                Sensor.TYPE_ACCELEROMETER);
+        this.mAccelManager.registerListener(this, this.accel, 
+                SensorManager.SENSOR_DELAY_NORMAL);
+        
+        //Set up gyroscope and listener
+        this.mGyroManager = (SensorManager) getSystemService(
+                Context.SENSOR_SERVICE);
+        this.accel = this.mGyroManager.getDefaultSensor(
+                Sensor.TYPE_GYROSCOPE);
+        this.mGyroManager.registerListener(this, this.gyro, 
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -70,7 +85,7 @@ public class Main extends Activity implements SensorEventListener {
      */
     protected void onPause() {
         super.onPause();
-        this.mSensorManager.unregisterListener(this);
+        this.mAccelManager.unregisterListener(this);
     }
 
     /**
@@ -78,7 +93,7 @@ public class Main extends Activity implements SensorEventListener {
      */
     protected void onResume() {
         super.onResume();
-        this.mSensorManager.registerListener(this, this.accel, 
+        this.mAccelManager.registerListener(this, this.accel, 
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -88,7 +103,7 @@ public class Main extends Activity implements SensorEventListener {
     }
 
     /**
-     * What to do when a sensor changes
+     * What to do when a sensor value changes.
      * @param event 
      */
     @Override
@@ -100,24 +115,24 @@ public class Main extends Activity implements SensorEventListener {
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
-        if (!this.mInitialized) {
-            this.mLastX = x;
-            this.mLastY = y;
-            this.mLastZ = z;
+        if (!this.initialized) {
+            this.aLastX = x;
+            this.aLastY = y;
+            this.aLastZ = z;
             tvX.setText("0.0");
             tvY.setText("0.0");
             tvZ.setText("0.0");
-            this.mInitialized = true;
+            this.initialized = true;
         } else {
-            float deltaX = Math.abs(this.mLastX - x);
-            float deltaY = Math.abs(this.mLastY - y);
-            float deltaZ = Math.abs(this.mLastZ - z);
-            if (deltaX < NOISE) deltaX = (float)0.0;
-            if (deltaY < NOISE) deltaY = (float)0.0;
-            if (deltaZ < NOISE) deltaZ = (float)0.0;
-            this.mLastX = x;
-            this.mLastY = y;
-            this.mLastZ = z;
+            float deltaX = Math.abs(this.aLastX - x);
+            float deltaY = Math.abs(this.aLastY - y);
+            float deltaZ = Math.abs(this.aLastZ - z);
+            if (deltaX < accNOISE) deltaX = (float)0.0;
+            if (deltaY < accNOISE) deltaY = (float)0.0;
+            if (deltaZ < accNOISE) deltaZ = (float)0.0;
+            this.aLastX = x;
+            this.aLastY = y;
+            this.aLastZ = z;
             tvX.setText(Float.toString(deltaX));
             tvY.setText(Float.toString(deltaY));
             tvZ.setText(Float.toString(deltaZ));
