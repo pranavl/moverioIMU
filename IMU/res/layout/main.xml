@@ -16,6 +16,45 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:stretchColumns="*">
+		<!--Accelerometer Readings===================================-->
+                <TableRow>
+			<TextView  
+	    		android:layout_width="wrap_content" 
+	    		android:layout_height="wrap_content"
+	    		android:textSize="14sp"  
+	    		android:text="X-Axis"
+	    		android:gravity="center"/>
+	    	<TextView  
+	    		android:layout_width="wrap_content" 
+	    		android:layout_height="wrap_content" 
+	    		android:textSize="14sp" 
+	    		android:text="Y-Axis"
+	    		android:gravity="center"/>
+	    	<TextView  
+	    		android:layout_width="wrap_content" 
+	    		android:layout_height="wrap_content"
+	    		android:textSize="14sp"  
+	    		android:text="Z-Axis"
+	    		android:gravity="center"/>
+		</TableRow>
+		<TableRow>
+			<TextView  
+	    		android:layout_width="wrap_content" 
+	    		android:layout_height="wrap_content"
+	    		android:id="@+id/accel_x"
+	    		android:gravity="center"/>
+	    	<TextView  
+	    		android:layout_width="wrap_content" 
+	    		android:layout_height="wrap_content"
+	    		android:id="@+id/accel_y"
+	    		android:gravity="center"/>
+	    	<TextView  
+	    		android:layout_width="wrap_content" 
+	    		android:layout_height="wrap_content"
+	    		android:id="@+id/accel_z"
+	    		android:gravity="center"/>
+		</TableRow>
+                <!--Gyroscope Readings=======================================-->
 		<TableRow>
 			<TextView  
 	    		android:layout_width="wrap_content" 
@@ -40,17 +79,17 @@
 			<TextView  
 	    		android:layout_width="wrap_content" 
 	    		android:layout_height="wrap_content"
-	    		android:id="@+id/x_axis"
+	    		android:id="@+id/gyro_x"
 	    		android:gravity="center"/>
 	    	<TextView  
 	    		android:layout_width="wrap_content" 
 	    		android:layout_height="wrap_content"
-	    		android:id="@+id/y_axis"
+	    		android:id="@+id/gyro_y"
 	    		android:gravity="center"/>
 	    	<TextView  
 	    		android:layout_width="wrap_content" 
 	    		android:layout_height="wrap_content"
-	    		android:id="@+id/z_axis"
+	    		android:id="@+id/gyro_z"
 	    		android:gravity="center"/>
 		</TableRow>
 	</TableLayout>
