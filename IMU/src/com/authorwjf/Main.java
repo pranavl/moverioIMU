@@ -17,6 +17,9 @@ import android.widget.TextView;
  */
 public class Main extends Activity implements SensorEventListener {
 
+    //========================================================================//
+    //Fields and Values=======================================================//
+    
     /**
      * Flag for initialization.
      */
@@ -52,6 +55,10 @@ public class Main extends Activity implements SensorEventListener {
      */
     private final float accNOISE = (float) 0.0;
     
+    
+    //========================================================================//
+    //Event Handlers==========================================================//
+    
     /**
      * Called when created.
      * @param savedInstanceState 
@@ -63,7 +70,7 @@ public class Main extends Activity implements SensorEventListener {
         setContentView(R.layout.main);
         this.initialized = false;
         
-        //Set up accelerometer and listener
+        //Set up accelerometer sensor and listener
         this.mAccelManager = (SensorManager) getSystemService(
                 Context.SENSOR_SERVICE);
         this.accel = this.mAccelManager.getDefaultSensor(
@@ -71,7 +78,7 @@ public class Main extends Activity implements SensorEventListener {
         this.mAccelManager.registerListener(this, this.accel, 
                 SensorManager.SENSOR_DELAY_NORMAL);
         
-        //Set up gyroscope and listener
+        //Set up gyroscope sensor and listener
         this.mGyroManager = (SensorManager) getSystemService(
                 Context.SENSOR_SERVICE);
         this.accel = this.mGyroManager.getDefaultSensor(
@@ -111,6 +118,23 @@ public class Main extends Activity implements SensorEventListener {
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
+        int eventType = event.sensor.getType();
+        if (eventType == this.accel.getType()) {
+            this.accelEvent(event);
+        }
+        if (eventType == this.gyro.getType()) {
+            this.gyroEvent(event);
+        }
+    }
+    
+    //========================================================================//
+    //Private Methods=========================================================//
+    
+    /**
+     * Handles accelerometer events.
+     * @param event event reported by accelerometer
+     */
+    private void accelEvent(SensorEvent event) {
         TextView tvX = (TextView) findViewById(R.id.x_axis);
         TextView tvY = (TextView) findViewById(R.id.y_axis);
         TextView tvZ = (TextView) findViewById(R.id.z_axis);
@@ -149,4 +173,12 @@ public class Main extends Activity implements SensorEventListener {
             }
         }
     }
+    
+    /**
+     * Handles gyroscope events.
+     * @param event event reported by gyroscope
+     */
+    private void gyroEvent(SensorEvent event) {
+    }
+    
 }
