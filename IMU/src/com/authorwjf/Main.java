@@ -186,9 +186,9 @@ public class Main extends Activity implements SensorEventListener {
      */
     private void gyroEvent(SensorEvent event) {
         //Access TextView elements for x, y, and z motion
-        TextView tvX = (TextView) findViewById(R.id.accel_x);
-        TextView tvY = (TextView) findViewById(R.id.accel_y);
-        TextView tvZ = (TextView) findViewById(R.id.accel_z);
+        TextView tvX = (TextView) findViewById(R.id.gyro_x);
+        TextView tvY = (TextView) findViewById(R.id.gyro_y);
+        TextView tvZ = (TextView) findViewById(R.id.gyro_z);
         
         //Store event values dx, dy, dz
         float x = event.values[0];

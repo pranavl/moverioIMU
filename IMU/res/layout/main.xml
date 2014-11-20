@@ -54,28 +54,8 @@
 	    		android:id="@+id/accel_z"
 	    		android:gravity="center"/>
 		</TableRow>
-                <!--Gyroscope Readings=======================================
-		<TableRow>
-			<TextView  
-	    		android:layout_width="wrap_content" 
-	    		android:layout_height="wrap_content"
-	    		android:textSize="14sp"  
-	    		android:text="X-Axis"
-	    		android:gravity="center"/>
-	    	<TextView  
-	    		android:layout_width="wrap_content" 
-	    		android:layout_height="wrap_content" 
-	    		android:textSize="14sp" 
-	    		android:text="Y-Axis"
-	    		android:gravity="center"/>
-	    	<TextView  
-	    		android:layout_width="wrap_content" 
-	    		android:layout_height="wrap_content"
-	    		android:textSize="14sp"  
-	    		android:text="Z-Axis"
-	    		android:gravity="center"/>
-		</TableRow>
-		<TableRow>
+                <!--Gyroscope Readings=======================================-->
+                <TableRow>
 			<TextView  
 	    		android:layout_width="wrap_content" 
 	    		android:layout_height="wrap_content"
@@ -91,7 +71,7 @@
 	    		android:layout_height="wrap_content"
 	    		android:id="@+id/gyro_z"
 	    		android:gravity="center"/>
-		</TableRow>-->
+		</TableRow>
 	</TableLayout>
 	<ImageView
 		android:paddingTop="10dip"
