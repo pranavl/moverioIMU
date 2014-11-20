@@ -81,7 +81,7 @@ public class Main extends Activity implements SensorEventListener {
         //Set up gyroscope sensor and listener
         this.mGyroManager = (SensorManager) getSystemService(
                 Context.SENSOR_SERVICE);
-        this.accel = this.mGyroManager.getDefaultSensor(
+        this.gyro = this.mGyroManager.getDefaultSensor(
                 Sensor.TYPE_GYROSCOPE);
         this.mGyroManager.registerListener(this, this.gyro, 
                 SensorManager.SENSOR_DELAY_NORMAL);
