@@ -74,6 +74,7 @@ public class Main extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         this.accInit = false;
+        this.gyroInit = false;
         
         //Set up accelerometer sensor and listener
         this.mAccelManager = (SensorManager) getSystemService(
@@ -197,11 +198,15 @@ public class Main extends Activity implements SensorEventListener {
         float y = event.values[1];
         float z = event.values[2];
         
-        tvX.setText(Float.toString(x));
-        tvY.setText(Float.toString(x));
-        tvZ.setText(Float.toString(x));
+        if (!this.gyroInit) {
+            this.gyroInit = true;
+        } else {
+            tvX.setText(Float.toString(x));
+            tvY.setText(Float.toString(x));
+            tvZ.setText(Float.toString(x));
         
-        //float omegaMag = (float) Math.sqrt(x * x + y * y + z * z);
+            float omegaMag = (float) Math.sqrt(x * x + y * y + z * z);
+        }
     }
     
     //========================================================================//
