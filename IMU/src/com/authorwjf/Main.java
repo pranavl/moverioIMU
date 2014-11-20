@@ -18,12 +18,17 @@ import android.widget.TextView;
 public class Main extends Activity implements SensorEventListener {
 
     //========================================================================//
-    //Fields and Values=======================================================//
+    //Flags, Fields, and Values===============================================//
     
     /**
-     * Flag for initialization.
+     * Flag for accelerometer initialization.
      */
-    private boolean initialized;
+    private boolean accInit;
+    
+    /**
+     * Flag for gyroscope initialization.
+     */
+    private boolean gyroInit;
     
     /**
      * Previous values for accelerometer.
@@ -57,7 +62,7 @@ public class Main extends Activity implements SensorEventListener {
     
     
     //========================================================================//
-    //Event Handlers==========================================================//
+    //Setup Handlers==========================================================//
     
     /**
      * Called when created.
@@ -68,7 +73,7 @@ public class Main extends Activity implements SensorEventListener {
         //Initialize activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        this.initialized = false;
+        this.accInit = false;
         
         //Set up accelerometer sensor and listener
         this.mAccelManager = (SensorManager) getSystemService(
@@ -128,7 +133,7 @@ public class Main extends Activity implements SensorEventListener {
     }
     
     //========================================================================//
-    //Private Methods=========================================================//
+    //Event Handlers==========================================================//
     
     /**
      * Handles accelerometer events.
@@ -147,22 +152,19 @@ public class Main extends Activity implements SensorEventListener {
         float z = event.values[2];
         
         //Perform calculations for acceleration
-        if (!this.initialized) {
+        if (!this.accInit) {
             this.aLastX = x;
             this.aLastY = y;
             this.aLastZ = z;
             tvX.setText("0.0");
             tvY.setText("0.0");
             tvZ.setText("0.0");
-            this.initialized = true;
+            this.accInit = true;
         } else {
             //Calculate acceleration, with filtering and display values
-            float deltaX = Math.abs(this.aLastX - x);
-            float deltaY = Math.abs(this.aLastY - y);
-            float deltaZ = Math.abs(this.aLastZ - z);
-            if (deltaX < accNOISE) deltaX = (float)0.0;
-            if (deltaY < accNOISE) deltaY = (float)0.0;
-            if (deltaZ < accNOISE) deltaZ = (float)0.0;
+            float deltaX = this.hiPFilter(Math.abs(this.aLastX - x), accNOISE);
+            float deltaY = this.hiPFilter(Math.abs(this.aLastY - y), accNOISE);
+            float deltaZ = this.hiPFilter(Math.abs(this.aLastZ - z), accNOISE);
             this.aLastX = x;
             this.aLastY = y;
             this.aLastZ = z;
@@ -202,6 +204,21 @@ public class Main extends Activity implements SensorEventListener {
         //float omegaMag = (float) Math.sqrt(x * x + y * y + z * z);
     }
     
+    //========================================================================//
+    //Private Methods=========================================================//
     
+    /**
+     * Method to filter noise.
+     * @param val value from sensor
+     * @param filt threshold value
+     * @return 0 if value is less than filter threshold
+     */
+    private float hiPFilter(float val, float filt) {
+        if (val < filt) {
+            return (float) 0.0;
+        } else {
+            return val;
+        }
+    }
     
 }

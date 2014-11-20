@@ -16,7 +16,6 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:stretchColumns="*">
-		<!--Accelerometer Readings===================================-->
                 <TableRow>
 			<TextView  
 	    		android:layout_width="wrap_content" 
@@ -37,7 +36,8 @@
 	    		android:text="Z-Axis"
 	    		android:gravity="center"/>
 		</TableRow>
-		<TableRow>
+		<!--Accelerometer Readings===================================-->
+                <TableRow>
 			<TextView  
 	    		android:layout_width="wrap_content" 
 	    		android:layout_height="wrap_content"
