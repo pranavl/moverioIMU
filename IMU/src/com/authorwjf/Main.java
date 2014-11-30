@@ -21,6 +21,11 @@ public class Main extends Activity implements SensorEventListener {
     //Flags, Fields, and Values===============================================//
     
     /**
+     * Position and orientation of IMU device.
+     */
+    private Position p;
+    
+    /**
      * Previous values for accelerometer.
      */
     private float aLastX, aLastY, aLastZ;    
@@ -45,16 +50,6 @@ public class Main extends Activity implements SensorEventListener {
      */
     private Sensor gyro;
     
-    /**
-     * Filtering value for noise.
-     */
-    private final float accNOISE = (float) 1.0;
-    
-    /**
-     * Position and orientation of IMU device.
-     */
-    private Position p;
-    
     
     //========================================================================//
     //Setup Handlers==========================================================//
@@ -68,8 +63,9 @@ public class Main extends Activity implements SensorEventListener {
         //Initialize activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-//        this.accInit = false;
-//        this.gyroInit = false;
+
+        //Set up position variable
+        this.p = new Position();
         
         //Set up accelerometer sensor and listener
         this.mAccelManager = (SensorManager) getSystemService(
@@ -85,10 +81,8 @@ public class Main extends Activity implements SensorEventListener {
         this.gyro = this.mGyroManager.getDefaultSensor(
                 Sensor.TYPE_GYROSCOPE);
         this.mGyroManager.registerListener(this, this.gyro, 
-                SensorManager.SENSOR_DELAY_NORMAL);
-        
-        //Set up position variable
-        this.p = new Position();
+                SensorManager.SENSOR_DELAY_NORMAL);    
+
     }
 
     /**
@@ -143,9 +137,7 @@ public class Main extends Activity implements SensorEventListener {
         float[] ev = new float[]{event.values[0], 
             event.values[1], 
             event.values[2]};
-        this.p.updatePosition(ev);
-        
-        float[] pos = this.p.getPos();
+        float[] pos = this.p.updatePosition(ev);
         
         //Set TextView elements for x, y, and z position
         TextView tvX = (TextView) findViewById(R.id.pos_x);
@@ -166,9 +158,7 @@ public class Main extends Activity implements SensorEventListener {
         float[] ev = new float[]{event.values[0], 
             event.values[1], 
             event.values[2]};
-        this.p.updatePosition(ev);
-        
-        float[] ori = this.p.getPos();
+        float[] ori = this.p.updateOrient(ev);
 
         //Set TextView elements for rotation about x,y,z
         TextView tvX = (TextView) findViewById(R.id.orient_x);
@@ -209,6 +199,10 @@ public class Main extends Activity implements SensorEventListener {
 //     * Flag for gyroscope initialization.
 //     */
 //    private boolean gyroInit;
+//    /**
+//     * Filtering value for noise.
+//     */
+//    private final float accNOISE = (float) 1.0;
    
 
 //    /**

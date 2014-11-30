@@ -89,7 +89,7 @@ public class Position {
      * @return position vector
      */
     public float[] updatePosition(float[] values) {
-        
+        this.pos = this.calcPosition(values);
         return this.pos;
     }
     
@@ -99,8 +99,30 @@ public class Position {
      * @return orientation vector
      */
     public float[] updateOrient(float[] values) {
-        
+        this.orient = this.calcOrient(values);
         return this.orient;
+    }
+
+        
+    //========================================================================//
+    //Private Methods=========================================================//
+
+    /**
+     * Uses linear acceleration to calculate x,y,z position.
+     * @param values event values
+     * @return updated position vector
+     */
+    private float[] calcPosition(float[] values) {
+        return values;
+    }
+    
+    /**
+     * Uses gyroscope to calculate x,y,z orientation.
+     * @param values event values
+     * @return updated orientation vector
+     */
+    private float[] calcOrient(float[] values) {
+        return values;
     }
     
 }
