@@ -26,11 +26,6 @@ public class Main extends Activity implements SensorEventListener {
     private Position p;
     
     /**
-     * Previous values for accelerometer.
-     */
-    private float aLastX, aLastY, aLastZ;    
-    
-    /**
      * Sensor manager for accelerometer.
      */
     private SensorManager mAccelManager;
@@ -88,6 +83,7 @@ public class Main extends Activity implements SensorEventListener {
     /**
      * When app is paused, stop listening.
      */
+    @Override
     protected void onPause() {
         super.onPause();
         this.mAccelManager.unregisterListener(this);
@@ -97,6 +93,7 @@ public class Main extends Activity implements SensorEventListener {
     /**
      * When app resumes, start listening again.
      */
+    @Override
     protected void onResume() {
         super.onResume();
         this.mAccelManager.registerListener(this, this.accel, 
@@ -199,6 +196,7 @@ public class Main extends Activity implements SensorEventListener {
 //     * Flag for gyroscope initialization.
 //     */
 //    private boolean gyroInit;
+//
 //    /**
 //     * Filtering value for noise.
 //     */

@@ -19,7 +19,31 @@ public class Position {
      * Rotation about x,y,z axis.
      */
     private float[] orient;
+
+    /**
+     * Last x,y,z coordinates of position.
+     */
+    private float[] oldPos;
     
+    /**
+     * Last rotation about x,y,z axis.
+     */
+    private float[] oldOrient;
+    
+    /**
+     * Previous acceleration values.
+     */
+    private float[] lastA;
+    
+    /**
+     * Previous linear velocity values.
+     */
+    private float[] lastV;
+    
+    /**
+     * Previous angular velocity values.
+     */
+    private float[] lastW;
     
     //========================================================================//
     //Constructors============================================================//
@@ -30,6 +54,8 @@ public class Position {
     public Position() {
         this.pos = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
         this.orient = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
+        this.oldPos = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
+        this.oldOrient = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
     }
 
     /**
@@ -47,6 +73,8 @@ public class Position {
             this.pos = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
             this.orient = v;
         }
+        this.oldPos = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
+        this.oldOrient = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
     }
     
     /**
@@ -57,6 +85,8 @@ public class Position {
     public Position(float[] p, float[] o) {
         this.pos = p;
         this.orient = o;
+        this.oldPos = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
+        this.oldOrient = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
     }
   
     
@@ -89,6 +119,7 @@ public class Position {
      * @return position vector
      */
     public float[] updatePosition(float[] values) {
+        this.oldPos = this.pos;
         this.pos = this.calcPosition(values);
         return this.pos;
     }
@@ -99,6 +130,7 @@ public class Position {
      * @return orientation vector
      */
     public float[] updateOrient(float[] values) {
+        this.oldOrient = this.orient;
         this.orient = this.calcOrient(values);
         return this.orient;
     }
