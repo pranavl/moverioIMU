@@ -21,16 +21,6 @@ public class Main extends Activity implements SensorEventListener {
     //Flags, Fields, and Values===============================================//
     
     /**
-     * Flag for accelerometer initialization.
-     */
-    private boolean accInit;
-    
-    /**
-     * Flag for gyroscope initialization.
-     */
-    private boolean gyroInit;
-    
-    /**
      * Previous values for accelerometer.
      */
     private float aLastX, aLastY, aLastZ;    
@@ -60,6 +50,11 @@ public class Main extends Activity implements SensorEventListener {
      */
     private final float accNOISE = (float) 1.0;
     
+    /**
+     * Position and orientation of IMU device.
+     */
+    private Position p;
+    
     
     //========================================================================//
     //Setup Handlers==========================================================//
@@ -73,8 +68,8 @@ public class Main extends Activity implements SensorEventListener {
         //Initialize activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        this.accInit = false;
-        this.gyroInit = false;
+//        this.accInit = false;
+//        this.gyroInit = false;
         
         //Set up accelerometer sensor and listener
         this.mAccelManager = (SensorManager) getSystemService(
@@ -91,6 +86,9 @@ public class Main extends Activity implements SensorEventListener {
                 Sensor.TYPE_GYROSCOPE);
         this.mGyroManager.registerListener(this, this.gyro, 
                 SensorManager.SENSOR_DELAY_NORMAL);
+        
+        //Set up position variable
+        this.p = new Position();
     }
 
     /**
@@ -120,7 +118,7 @@ public class Main extends Activity implements SensorEventListener {
 
     /**
      * What to do when a sensor value changes?
-     * @param event 
+     * @param event event reported by sensor
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -141,46 +139,22 @@ public class Main extends Activity implements SensorEventListener {
      * @param event event reported by accelerometer
      */
     private void accelEvent(SensorEvent event) {
-        //Access TextView elements for x, y, and z acceleration, and ImageView
-        TextView tvX = (TextView) findViewById(R.id.accel_x);
-        TextView tvY = (TextView) findViewById(R.id.accel_y);
-        TextView tvZ = (TextView) findViewById(R.id.accel_z);
-        ImageView iv = (ImageView) findViewById(R.id.image);
+        //Calculate new position
+        float[] ev = new float[]{event.values[0], 
+            event.values[1], 
+            event.values[2]};
+        this.p.updatePosition(ev);
         
-        //Store event values dx, dy, dz
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
+        float[] pos = this.p.getPos();
         
-        //Perform calculations for acceleration
-        if (!this.accInit) {
-            this.aLastX = x;
-            this.aLastY = y;
-            this.aLastZ = z;
-            tvX.setText("0.0");
-            tvY.setText("0.0");
-            tvZ.setText("0.0");
-            this.accInit = true;
-        } else {
-            //Calculate acceleration, with filtering and display values
-            float deltaX = this.hiPFilter(Math.abs(this.aLastX - x), accNOISE);
-            float deltaY = this.hiPFilter(Math.abs(this.aLastY - y), accNOISE);
-            float deltaZ = this.hiPFilter(Math.abs(this.aLastZ - z), accNOISE);
-            this.aLastX = x;
-            this.aLastY = y;
-            this.aLastZ = z;
-            tvX.setText(Float.toString(deltaX));
-            tvY.setText(Float.toString(deltaY));
-            tvZ.setText(Float.toString(deltaZ));
-            iv.setVisibility(View.VISIBLE);
-            if (deltaX > deltaY) {
-                iv.setImageResource(R.drawable.horizontal);
-            } else if (deltaY > deltaX) {
-                iv.setImageResource(R.drawable.vertical);
-            } else {
-                iv.setVisibility(View.INVISIBLE);
-            }
-        }
+        //Set TextView elements for x, y, and z position
+        TextView tvX = (TextView) findViewById(R.id.pos_x);
+        TextView tvY = (TextView) findViewById(R.id.pos_y);
+        TextView tvZ = (TextView) findViewById(R.id.pos_z);
+        
+        tvX.setText(Float.toString(pos[0]));
+        tvY.setText(Float.toString(pos[1]));
+        tvZ.setText(Float.toString(pos[2]));
     }
     
     /**
@@ -188,25 +162,22 @@ public class Main extends Activity implements SensorEventListener {
      * @param event event reported by gyroscope
      */
     private void gyroEvent(SensorEvent event) {
-        //Access TextView elements for x, y, and z motion
-        TextView tvX = (TextView) findViewById(R.id.gyro_x);
-        TextView tvY = (TextView) findViewById(R.id.gyro_y);
-        TextView tvZ = (TextView) findViewById(R.id.gyro_z);
+        //Calculate new orientation
+        float[] ev = new float[]{event.values[0], 
+            event.values[1], 
+            event.values[2]};
+        this.p.updatePosition(ev);
         
-        //Store event values dx, dy, dz
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
+        float[] ori = this.p.getPos();
+
+        //Set TextView elements for rotation about x,y,z
+        TextView tvX = (TextView) findViewById(R.id.orient_x);
+        TextView tvY = (TextView) findViewById(R.id.orient_y);
+        TextView tvZ = (TextView) findViewById(R.id.orient_z);
         
-        if (!this.gyroInit) {
-            this.gyroInit = true;
-        } else {
-            tvX.setText(Float.toString(x));
-            tvY.setText(Float.toString(x));
-            tvZ.setText(Float.toString(x));
-        
-            float omegaMag = (float) Math.sqrt(x * x + y * y + z * z);
-        }
+        tvY.setText(Float.toString(ori[0]));
+        tvY.setText(Float.toString(ori[1]));
+        tvZ.setText(Float.toString(ori[2]));
     }
     
     //========================================================================//
@@ -225,5 +196,92 @@ public class Main extends Activity implements SensorEventListener {
             return val;
         }
     }
+    
+    //========================================================================//
+    //Junk Area===============================================================//
+
+//    /**
+//     * Flag for accelerometer initialization.
+//     */
+//    private boolean accInit;
+//    
+//    /**
+//     * Flag for gyroscope initialization.
+//     */
+//    private boolean gyroInit;
+   
+
+//    /**
+//     * Handles accelerometer events.
+//     * @param event event reported by accelerometer
+//     */
+//    private void accelEvent(SensorEvent event) {
+//        //Access TextView elements for x, y, and z acceleration, and ImageView
+//        TextView tvX = (TextView) findViewById(R.id.accel_x);
+//        TextView tvY = (TextView) findViewById(R.id.accel_y);
+//        TextView tvZ = (TextView) findViewById(R.id.accel_z);
+////        ImageView iv = (ImageView) findViewById(R.id.image);
+//        
+//        //Store event values dx, dy, dz
+//        float x = event.values[0];
+//        float y = event.values[1];
+//        float z = event.values[2];
+//        
+//        //Perform calculations for acceleration
+//        if (!this.accInit) {
+//            this.aLastX = x;
+//            this.aLastY = y;
+//            this.aLastZ = z;
+//            tvX.setText("0.0");
+//            tvY.setText("0.0");
+//            tvZ.setText("0.0");
+//            this.accInit = true;
+//        } else {
+//            //Calculate acceleration, with filtering and display values
+//            float deltaX = this.hiPFilter(Math.abs(this.aLastX - x), accNOISE);
+//            float deltaY = this.hiPFilter(Math.abs(this.aLastY - y), accNOISE);
+//            float deltaZ = this.hiPFilter(Math.abs(this.aLastZ - z), accNOISE);
+//            this.aLastX = x;
+//            this.aLastY = y;
+//            this.aLastZ = z;
+//            tvX.setText(Float.toString(deltaX));
+//            tvY.setText(Float.toString(deltaY));
+//            tvZ.setText(Float.toString(deltaZ));
+////            iv.setVisibility(View.VISIBLE);
+////            if (deltaX > deltaY) {
+////                iv.setImageResource(R.drawable.horizontal);
+////            } else if (deltaY > deltaX) {
+////                iv.setImageResource(R.drawable.vertical);
+////            } else {
+////                iv.setVisibility(View.INVISIBLE);
+////            }
+//        }
+//    }
+//    
+//    /**
+//     * Handles gyroscope events.
+//     * @param event event reported by gyroscope
+//     */
+//    private void gyroEvent(SensorEvent event) {
+//        //Access TextView elements for x, y, and z motion
+//        TextView tvX = (TextView) findViewById(R.id.gyro_x);
+//        TextView tvY = (TextView) findViewById(R.id.gyro_y);
+//        TextView tvZ = (TextView) findViewById(R.id.gyro_z);
+//        
+//        //Store event values dx, dy, dz
+//        float x = event.values[0];
+//        float y = event.values[1];
+//        float z = event.values[2];
+//        
+//        if (!this.gyroInit) {
+//            this.gyroInit = true;
+//        } else {
+//            tvX.setText(Float.toString(x));
+//            tvY.setText(Float.toString(x));
+//            tvZ.setText(Float.toString(x));
+//        
+//            float omegaMag = (float) Math.sqrt(x * x + y * y + z * z);
+//        }
+//    }
     
 }
