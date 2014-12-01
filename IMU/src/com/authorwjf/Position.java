@@ -1,6 +1,8 @@
 
 package com.authorwjf;
 
+import android.hardware.SensorEvent;
+
 /**
  * Calculates position and orientation of Moverio device.
  * @author Pranav
@@ -9,6 +11,11 @@ public class Position {
     
     //========================================================================//
     //Flags, Fields, and Values===============================================//
+    
+    /**
+     * Time of the last accelerometer event.
+     */
+    private long lastAcc = (long) 0.0;
     
     /**
      * x,y,z coordinates of position.
@@ -56,6 +63,9 @@ public class Position {
         this.orient = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
         this.oldPos = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
         this.oldOrient = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
+        
+        this.lastA = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
+        this.lastV = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
     }
 
     /**
@@ -115,23 +125,22 @@ public class Position {
 
     /**
      * Update position field from accelerometer event.
-     * @param values event values
+     * @param event accelerometer sensor event
      * @return position vector
      */
-    public float[] updatePosition(float[] values) {
-        this.oldPos = this.pos;
-        this.pos = this.calcPosition(values);
+    public float[] updatePosition(SensorEvent event) {
+        this.pos = this.calcPosition(event);
         return this.pos;
     }
     
     /**
      * Update position field from gyroscope event.
-     * @param values event values
+     * @param event gyroscope sensor event
      * @return orientation vector
      */
-    public float[] updateOrient(float[] values) {
+    public float[] updateOrient(SensorEvent event) {
         this.oldOrient = this.orient;
-        this.orient = this.calcOrient(values);
+        this.orient = this.calcOrient(event);
         return this.orient;
     }
 
@@ -141,11 +150,29 @@ public class Position {
 
     /**
      * Uses linear acceleration to calculate x,y,z position.
-     * @param values event values
+     * @param event accelerometer sensor event
      * @return updated position vector
      */
-    private float[] calcPosition(float[] values) {
-        return values;
+    private float[] calcPosition(SensorEvent event) {
+        long tstep = event.timestamp - this.lastAcc;
+        
+        //Double integration
+        float[] v = new float[3];
+        for (int i = 0; i < 3; i++) {
+            v[i] = tstep * event.values[i] + this.lastV[i];
+        }
+        float[] x = new float[3];
+        for (int j = 0; j < 3; j++) {
+            x[j] = tstep * v[j] + this.oldPos[j];
+        }
+        
+        //Update all last fields
+        this.lastAcc = event.timestamp;
+        this.lastA = event.values;
+        this.lastV = v;
+        this.oldPos = this.pos;
+        
+        return x;
     }
     
     /**
@@ -153,8 +180,8 @@ public class Position {
      * @param values event values
      * @return updated orientation vector
      */
-    private float[] calcOrient(float[] values) {
-        return values;
+    private float[] calcOrient(SensorEvent event) {
+        return null;
     }
     
 }

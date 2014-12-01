@@ -131,10 +131,7 @@ public class Main extends Activity implements SensorEventListener {
      */
     private void accelEvent(SensorEvent event) {
         //Calculate new position
-        float[] ev = new float[]{event.values[0], 
-            event.values[1], 
-            event.values[2]};
-        float[] pos = this.p.updatePosition(ev);
+        float[] pos = this.p.updatePosition(event);
         
         //Set TextView elements for x, y, and z position
         TextView tvX = (TextView) findViewById(R.id.pos_x);
@@ -152,10 +149,7 @@ public class Main extends Activity implements SensorEventListener {
      */
     private void gyroEvent(SensorEvent event) {
         //Calculate new orientation
-        float[] ev = new float[]{event.values[0], 
-            event.values[1], 
-            event.values[2]};
-        float[] ori = this.p.updateOrient(ev);
+        float[] ori = this.p.updateOrient(event);
 
         //Set TextView elements for rotation about x,y,z
         TextView tvX = (TextView) findViewById(R.id.orient_x);
