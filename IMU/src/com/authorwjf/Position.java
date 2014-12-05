@@ -17,6 +17,9 @@ public class Position {
      */
     private float lastAcc = (float) 0.0;
     
+    /**
+     * Time that position calculations begin.
+     */
     private float startTime;
     
     /**
@@ -120,6 +123,10 @@ public class Position {
         return this.orient;
     }
     
+    /**
+     * What time do position calculations begin?
+     * @param t start time
+     */
     public void setStartTime(float t) {
         this.startTime = t;
     }
@@ -159,7 +166,8 @@ public class Position {
      */
     private float[] calcPosition(SensorEvent event) {
         //Time of event in seconds
-        float evTime = (float) (event.timestamp*Math.pow(10, -9) - this.startTime);
+        float evTime = (float) (event.timestamp * Math.pow(10, -9)
+                - this.startTime);
         
         //Calculate velocity
         //First, create line modeling acceleration

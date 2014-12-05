@@ -45,6 +45,9 @@ public class Main extends Activity implements SensorEventListener {
      */
     private Sensor gyro;
     
+    /**
+     * Is the event being recorded the first one?
+     */
     private boolean firstEvent;
     
     //========================================================================//
@@ -62,7 +65,6 @@ public class Main extends Activity implements SensorEventListener {
 
         //Set up position variable
         this.p = new Position();
-        
         this.firstEvent = true;
         
         //Set up accelerometer sensor and listener
@@ -116,10 +118,12 @@ public class Main extends Activity implements SensorEventListener {
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
+        //Set start time
         if (this.firstEvent) {
             this.p.setStartTime((float) (event.timestamp * Math.pow(10, -9)));
             this.firstEvent = false;
         }
+        //Calls appropriate event depending on which sensor fired
         int eventType = event.sensor.getType();
         if (eventType == this.accel.getType()) {
             this.accelEvent(event);
