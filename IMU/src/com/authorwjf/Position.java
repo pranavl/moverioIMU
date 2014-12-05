@@ -13,9 +13,11 @@ public class Position {
     //Flags, Fields, and Values===============================================//
     
     /**
-     * Time of the last accelerometer event.
+     * Time of the last accelerometer event (in seconds).
      */
-    private long lastAcc = (long) 0.0;
+    private float lastAcc = (float) 0.0;
+    
+    private float startTime;
     
     /**
      * x,y,z coordinates of position.
@@ -98,7 +100,6 @@ public class Position {
         this.oldPos = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
         this.oldOrient = new float[]{(float) 0.0, (float) 0.0, (float) 0.0};
     }
-  
     
     //========================================================================//
     //Accessors===============================================================//
@@ -119,6 +120,9 @@ public class Position {
         return this.orient;
     }
     
+    public void setStartTime(float t) {
+        this.startTime = t;
+    }
     
     //========================================================================//
     //Methods=================================================================//
@@ -154,20 +158,38 @@ public class Position {
      * @return updated position vector
      */
     private float[] calcPosition(SensorEvent event) {
-        long tstep = event.timestamp - this.lastAcc;
+        //Time of event in seconds
+        float evTime = (float) (event.timestamp*Math.pow(10, -9) - this.startTime);
         
-        //Double integration
-        float[] v = new float[3];
+        //Calculate velocity
+        //First, create line modeling acceleration
+        float[] m = new float[3];
         for (int i = 0; i < 3; i++) {
-            v[i] = tstep * event.values[i] + this.lastV[i];
+            m[i] = (float) (event.values[i] - this.lastA[i]);
         }
-        float[] x = new float[3];
+        float[] b = new float[3];
         for (int j = 0; j < 3; j++) {
-            x[j] = tstep * v[j] + this.oldPos[j];
+            b[j] = (float) (event.values[j] - m[j] * evTime);
+        }
+        
+        //Integrate to calculate velocity
+        float[] v = new float[3];
+        for (int l = 0; l < 3; l++) {
+            v[l] = (1 / 2) * m[l] * this.evalAt(evTime, this.lastAcc, 2)
+                    + b[l] * this.evalAt(evTime, this.lastAcc, 1)
+                    + this.lastV[l];
+        }
+        //Integrate to calculate position
+        float[] x = new float[3];
+        for (int n = 0; n < 3; n++) {
+            x[n] = (1 / 6) * m[n] * this.evalAt(evTime, this.lastAcc, 3)
+                    + (1 / 2) * b[n] * this.evalAt(evTime, this.lastAcc, 2)
+                    + this.lastV[n] * this.evalAt(evTime, this.lastAcc, 1)
+                    + this.oldPos[n];
         }
         
         //Update all last fields
-        this.lastAcc = event.timestamp;
+        this.lastAcc = evTime;
         this.lastA = event.values;
         this.lastV = v;
         this.oldPos = this.pos;
@@ -177,11 +199,22 @@ public class Position {
     
     /**
      * Uses gyroscope to calculate x,y,z orientation.
-     * @param values event values
+     * @param event gyroscope sensor event
      * @return updated orientation vector
      */
     private float[] calcOrient(SensorEvent event) {
         return null;
+    }
+    
+    /**
+     * Integration helper: evaluate function at t2 and t1.
+     * @param t2 later time
+     * @param t1 previous time
+     * @param deg degree at which to be evaluated
+     * @return t2^deg - t1^deg
+     */
+    private float evalAt(float t2, float t1, int deg) {
+        return (float) (Math.pow(t2, deg) - Math.pow(t1, deg));
     }
     
 }

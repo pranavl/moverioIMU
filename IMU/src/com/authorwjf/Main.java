@@ -45,6 +45,7 @@ public class Main extends Activity implements SensorEventListener {
      */
     private Sensor gyro;
     
+    private boolean firstEvent;
     
     //========================================================================//
     //Setup Handlers==========================================================//
@@ -62,11 +63,13 @@ public class Main extends Activity implements SensorEventListener {
         //Set up position variable
         this.p = new Position();
         
+        this.firstEvent = true;
+        
         //Set up accelerometer sensor and listener
         this.mAccelManager = (SensorManager) getSystemService(
                 Context.SENSOR_SERVICE);
         this.accel = this.mAccelManager.getDefaultSensor(
-                Sensor.TYPE_ACCELEROMETER);
+                Sensor.TYPE_LINEAR_ACCELERATION);
         this.mAccelManager.registerListener(this, this.accel, 
                 SensorManager.SENSOR_DELAY_NORMAL);
         
@@ -75,8 +78,8 @@ public class Main extends Activity implements SensorEventListener {
                 Context.SENSOR_SERVICE);
         this.gyro = this.mGyroManager.getDefaultSensor(
                 Sensor.TYPE_GYROSCOPE);
-        this.mGyroManager.registerListener(this, this.gyro, 
-                SensorManager.SENSOR_DELAY_NORMAL);    
+//        this.mGyroManager.registerListener(this, this.gyro, 
+//                SensorManager.SENSOR_DELAY_NORMAL);    
 
     }
 
@@ -113,13 +116,17 @@ public class Main extends Activity implements SensorEventListener {
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (this.firstEvent) {
+            this.p.setStartTime((float) (event.timestamp * Math.pow(10, -9)));
+            this.firstEvent = false;
+        }
         int eventType = event.sensor.getType();
         if (eventType == this.accel.getType()) {
             this.accelEvent(event);
         }
-        if (eventType == this.gyro.getType()) {
-            this.gyroEvent(event);
-        }
+//        if (eventType == this.gyro.getType()) {
+//            this.gyroEvent(event);
+//        }
     }
     
     //========================================================================//
@@ -137,10 +144,14 @@ public class Main extends Activity implements SensorEventListener {
         TextView tvX = (TextView) findViewById(R.id.pos_x);
         TextView tvY = (TextView) findViewById(R.id.pos_y);
         TextView tvZ = (TextView) findViewById(R.id.pos_z);
-        
+       
         tvX.setText(Float.toString(pos[0]));
         tvY.setText(Float.toString(pos[1]));
         tvZ.setText(Float.toString(pos[2]));
+        
+//        tvX.setText(Float.toString(event.values[0]));
+//        tvY.setText(Float.toString(event.values[1]));
+//        tvZ.setText(Float.toString(event.values[2]));
     }
     
     /**
